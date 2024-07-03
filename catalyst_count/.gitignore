@@ -1,0 +1,77 @@
+# Python specific
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+
+# Environment variables
+.env
+
+# Django specific
+db.sqlite3
+/media
+/staticfiles
+
+# macOS specific
+.DS_Store
+
+# Virtual environment
+venv/
+env/
+
+# IDE specific
+.vscode/
+.idea/
+
+# Ignore all bytecode files
+*.py[cod]
+
+# Ignore log files and databases
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+*.cache
+*.coverage
+*.egg
+*.egg-info
+*.installed.cfg
+*.manifest
+*.spec
+
+# Ignore node_modules
+node_modules/
+npm-debug.log
+
+# Ignore coverage report
+htmlcov/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Ignore mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Ignore profiler logs
+.prof/
+
+# Ignore Pyre type checker
+.pyre/
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore JetBrains IDE settings
+.idea/
+
+# Ignore pipenv files
+pipenv-*
+
+# Ignore Sphinx documentation
+docs/_build/
