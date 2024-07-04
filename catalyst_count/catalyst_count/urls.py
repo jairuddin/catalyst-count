@@ -25,9 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('authentication_login.urls')),
     path('', include('user_management.urls')),
-    
+    path('', include('upload_data.urls')),
+    path('', include('count_list_api.urls')),
+    path('', include('query_builder.urls')),
     
 
-]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 

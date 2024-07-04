@@ -1,0 +1,62 @@
+{% extends 'query_builder_temp/base.html' %}
+{% load static %}
+
+{% block title %}
+Catalyst Query Form
+{% endblock title %}
+
+{% block css %}
+<style>
+    /* Add custom styles here */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .container {
+        margin-top: 2rem;
+    }
+    .card {
+        margin-top: 1rem;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="container">
+    {% if count is not none %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> Total: {{ count }} records found for the query
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
+    
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3>Query Builder</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="industry">Industry:</label>
+                    <input type="text" id="industry" name="industry" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="locality">Locality:</label>
+                    <input type="text" id="locality" name="locality" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="country">Country:</label>
+                    <input type="text" id="country" name="country" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="year_founded">Year Founded:</label>
+                    <input type="text" id="year_founded" name="year_founded" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

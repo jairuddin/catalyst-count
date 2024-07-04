@@ -1,0 +1,217 @@
+{% extends 'file_upload/base.html' %}
+{% load static %}
+{% block title %}
+Catalyst File Uploader
+{% endblock title %}
+
+{% block css %}
+<style>
+    #myProgress {
+        width: 100%;
+    }
+
+    #uploaded_files {
+        margin-top: 25px;
+        display: flex;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    .file-icon i {
+        font-size: 60px;
+        color: rgb(0, 0, 0);
+    }
+
+    .file-details {
+        margin-top: -2px;
+        padding-left: 10px;
+        width: 100%;
+    }
+
+    .file-details p {
+        margin-bottom: -7px;
+    }
+
+    small {
+        margin-top: 0;
+        color: black;
+    }
+
+    .progress {
+        margin-top: 10px;
+    }
+
+    .progress-bar {
+        transition: width 0.4s;
+    }
+
+    .alert {
+        margin-top: 20px;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="col-lg-6 col-md-6 mx-auto" style="margin-top: 100px;">
+        <form enctype="multipart/form-data" method="POST" action="">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Select file to upload:</label>
+                <input type="file" class="form-control" id="fileupload" placeholder="Select file" name="file">
+            </div>
+            <button type="submit" id="submit" class="btn btn-primary">Upload</button>
+        </form>
+        <div id="uploaded_files"></div>
+    </div>
+</div>
+
+{% block js %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    class FileUpload {
+        constructor(input) {
+            this.input = input;
+            this.max_length = 1024 * 1024 * 10;
+        }
+
+        create_progress_bar() {
+            var progress = `
+                <div class="file-icon">
+                    <i class="fa fa-file-o" aria-hidden="true"></i>
+                </div>
+                <div class="file-details">
+                    <p class="filename"></p>
+                    <small class="textbox"></small>
+                    <div class="progress" style="margin-top: 5px;">
+                        <div class="progress-bar bg-primary" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('uploaded_files').innerHTML = progress;
+        }
+
+        upload() {
+            this.create_progress_bar();
+            this.initFileUpload();
+        }
+
+        initFileUpload() {
+            this.file = this.input.files[0];
+            this.upload_file(0, '');
+        }
+
+        upload_file(start, path) {
+            var end;
+            var self = this;
+            var existingPath = path;
+            var formData = new FormData();
+            var nextChunk = start + this.max_length + 1;
+            var currentChunk = this.file.slice(start, nextChunk);
+            var uploadedChunk = start + currentChunk.size;
+            if (uploadedChunk >= this.file.size) {
+                end = 1;
+            } else {
+                end = 0;
+            }
+            formData.append('file', currentChunk);
+            formData.append('end', end);
+            formData.append('existingPath', existingPath);
+            formData.append('nextSlice', nextChunk);
+            $('.filename').text(this.file.name);
+            $('.textbox').text("");
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            });
+            $.ajax({
+                xhr: function () {
+                    var xhr = new XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function (e) {
+                        if (e.lengthComputable) {
+                            var percent;
+                            if (self.file.size < self.max_length) {
+                                percent = Math.round((e.loaded / e.total) * 100);
+                            } else {
+                                percent = Math.round((uploadedChunk / self.file.size) * 100);
+                            }
+                            $('.progress-bar').css('width', percent + '%');
+                            $('.progress-bar').text(percent + '%');
+                        }
+                    });
+                    return xhr;
+                },
+                url: '',
+                type: 'POST',
+                dataType: 'json',
+                cache: false,
+                processData: false,
+                contentType: false,
+                data: formData,
+                error: function (xhr) {
+                    alert(xhr.statusText);
+                },
+                success: function (res) {
+                    if (nextChunk < self.file.size) {
+                        self.upload_file(nextChunk, existingPath);
+                    } else {
+                        $('.textbox').text(res.data);
+                        alert(res.data);
+                    }
+                }
+            });
+        }
+    }
+
+    (function ($) {
+        $('#submit').on('click', (event) => {
+            event.preventDefault();
+            var uploader = new FileUpload(document.querySelector('#fileupload'));
+            uploader.upload();
+        });
+    })(jQuery);
+
+    ondragenter = function (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+    };
+
+    ondragover = function (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+    };
+
+    ondragleave = function (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+    };
+
+    ondrop = function (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        const files = evt.originalEvent.dataTransfer;
+        var uploader = new FileUpload(files);
+        uploader.upload();
+    };
+
+    $('#dropBox')
+        .on('dragover', ondragover)
+        .on('dragenter', ondragenter)
+        .on('dragleave', ondragleave)
+        .on('drop', ondrop);
+</script>
+{% endblock js %}
+{% endblock content %}
