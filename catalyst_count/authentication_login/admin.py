@@ -5,4 +5,4 @@ from .models import CustomUser
 
 
 
-admin.site.register(CustomUser) #Custom User Model ko Admin panel pe register kiya gaya hai 
+admin.site.register(CustomUser) 
