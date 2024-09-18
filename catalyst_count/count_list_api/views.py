@@ -28,10 +28,12 @@ class FilterCountView(APIView):
             if not is_valid_string(industry):
                 return Response({'error':'Invalid Characters in industry'}, status=status.HTTP_400_BAD_REQUEST)
             filters['industry__icontains'] = industry
+        
         if locality:
             if not is_valid_string(locality):
                 return Response({'error':'Invalid Characters in locality'}, status=status.HTTP_400_BAD_REQUEST)
             filters['locality__icontains'] = locality
+        
         if country:
             if not is_valid_string(country):
                 return Response({'error':'Invalid Characters in country'}, status=status.HTTP_400_BAD_REQUEST)
